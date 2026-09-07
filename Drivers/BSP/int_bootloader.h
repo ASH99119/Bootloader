@@ -24,16 +24,21 @@
  * 
  */
 
-void Int_Bootloader_Init(void);
+void Int_Bootloader_receive_app (void);
 
 
 
 /**
  * @brief 跳转到A程序
+ * uint8_t 0:成功  1:失败
+ */
+uint8_t Int_Bootloader_jump_to_app(void);
+
+/**
+ * @brief 外部可调用 提前擦除flash空间
+ * 
  * 
  */
-void Int_Bootloader_jump_to_app(void);
-
-
+void Int_bootloader_erase_flash(uint32_t page_addr,uint16_t pages);
 
 #endif // INT_BOOTLOADER_H

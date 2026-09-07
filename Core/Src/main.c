@@ -24,7 +24,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "string.h"
-#include "int_bootloader.h"
+//#include "int_bootloader.h"
+#include "App_bootloader.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,7 +53,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-extern uint16_t uart_rec_full_len; //接收数据的总长度
+extern uint16_t uart_rec_full_len; //锟斤拷锟斤拷锟斤拷锟捷碉拷锟杰筹拷锟斤拷
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -90,12 +92,14 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
-  Int_Bootloader_Init();
-
-
   // uint8_t receive_buff[16] = {0};
   // uint16 receive_len = 0;
+  //Int_Bootloader_Init();
+
+
+  //初始化bootloader => 打印日志启动
+  APP_bootloader_init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,11 +108,10 @@ int main(void)
   
   while (1)
   {
-  //空闲中断接收 => 空闲帧中断 => idle空闲帧模式 =>收到数据后写一个地址值存储收到的数据长度
+ //空闲中断接收 => 空闲帧中断 => idle空闲帧模式 =>收到数据后写一个地址值存储收到的数据长度
   //1：接收缓存  2：接收数据长度 3：接收的数据缓存  4:实际接收数据长度  5接收时间
   //接收的数据太小容易出现空闲中断丢失  => 需要验证实际接收数据有没有产生
   //业务处理方向 接收数据最大256字节
-
     // HAL_UARTEx_ReceiveToIdle(&huart1, receive_buff, REC_BUFF_LEN ,&receive_len, 0xffff);
     // if(receive_len > 0)
     // {
@@ -121,21 +124,24 @@ int main(void)
 
 
 
-    //1：接收缓存  2：接收数据长度 3：接收的数据缓存 4：接收时间
+   //1：接收缓存  2：接收数据长度 3：接收的数据缓存 4：接收时间
     //接收的数据要有效 =>1. 接收数据长度不为0   2.接收的数据缓存不为空
 
     // HAL_UART_Receive(&huart1, receive_buff, 16, 0xffff);
     // if(strlen((char*)receive_buff) > 0)
     // {
-    //1：接收缓存  2：接收数据长度 3：接收的数据缓存 4：接收时间
+    //1：接收缓存  2：接收数据长度 3：接收的数据缓存  4：接收时间
     //   HAL_UART_Transmit(&huart1, receive_buff, 16, 0xffff);
     //   memset(receive_buff, 0, 16);
     // }
 
 
-    printf("uart_rec_full_len:%d\r\n", uart_rec_full_len);
-    HAL_Delay(3000);
-    Int_Bootloader_jump_to_app();
+    // printf("uart_rec_full_len:%d\r\n", uart_rec_full_len);
+    // HAL_Delay(3000);
+    // Int_Bootloader_jump_to_app();
+
+
+    App_bootloader_work();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

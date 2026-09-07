@@ -3,17 +3,18 @@
         {
             "name": "Bootloader_P02",
             "includePath": [
-                "d:\\cube_project\\Bootloader_P02\\Core\\Inc",
-                "d:\\cube_project\\Bootloader_P02\\Drivers\\STM32F1xx_HAL_Driver\\Inc",
-                "d:\\cube_project\\Bootloader_P02\\Drivers\\STM32F1xx_HAL_Driver\\Inc\\Legacy",
-                "d:\\cube_project\\Bootloader_P02\\Drivers\\CMSIS\\Device\\ST\\STM32F1xx\\Include",
-                "d:\\cube_project\\Bootloader_P02\\Drivers\\CMSIS\\Include",
-                "d:\\cube_project\\Bootloader_P02\\Drivers\\BSP",
-                "D:\\Keil5\\ARM\\ARMCC\\include",
-                "D:\\Keil5\\ARM\\ARMCC\\include\\rw",
-                "d:\\cube_project\\Bootloader_P02\\MDK-ARM",
-                "d:\\cube_project\\Bootloader_P02\\Core\\Src",
-                "d:\\cube_project\\Bootloader_P02\\Drivers\\STM32F1xx_HAL_Driver\\Src"
+                "h:\\Stm32cube_project\\Bootloader_P02\\Core\\Inc",
+                "h:\\Stm32cube_project\\Bootloader_P02\\Drivers\\STM32F1xx_HAL_Driver\\Inc",
+                "h:\\Stm32cube_project\\Bootloader_P02\\Drivers\\STM32F1xx_HAL_Driver\\Inc\\Legacy",
+                "h:\\Stm32cube_project\\Bootloader_P02\\Drivers\\CMSIS\\Device\\ST\\STM32F1xx\\Include",
+                "h:\\Stm32cube_project\\Bootloader_P02\\Drivers\\CMSIS\\Include",
+                "h:\\Stm32cube_project\\Bootloader_P02\\Drivers\\BSP",
+                "h:\\Stm32cube_project\\Bootloader_P02\\Drivers\\Application",
+                "H:\\Keil5\\ARM\\ARMCC\\include",
+                "H:\\Keil5\\ARM\\ARMCC\\include\\rw",
+                "h:\\Stm32cube_project\\Bootloader_P02\\MDK-ARM",
+                "h:\\Stm32cube_project\\Bootloader_P02\\Core\\Src",
+                "h:\\Stm32cube_project\\Bootloader_P02\\Drivers\\STM32F1xx_HAL_Driver\\Src"
             ],
             "defines": [
                 "USE_HAL_DRIVER",
