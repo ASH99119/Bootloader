@@ -8,6 +8,8 @@ uint16_t uart_rec_full_len = 0; //接收数据的总长度
 
 //记录当前写入程序的偏移量
 uint32_t flash_write_offset = 0;
+//记录当前一次接收数据的时间
+uint32_t last_rec_time = 0;
 
 //末尾可能出现的单独字节
 //标记最后一个字节是否是单独的
@@ -160,6 +162,9 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     if(huart->Instance == USART1)
     {
+        //接收到数据 记录当前的STM32系统时间
+        last_rec_time = HAL_GetTick();
+
         //保存接收数据的长度
         uart_rec_len = Size;
         uart_rec_full_len += uart_rec_len;
@@ -203,7 +208,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
  * 
  */
 
-void Int_Bootloader_Init(void)
+void Int_Bootloader_receive_app (void)
 {
     //清空掉初始化串口使用之前的所有问题
     __HAL_UART_CLEAR_OREFLAG(&huart1);
@@ -218,9 +223,9 @@ void Int_Bootloader_Init(void)
 
 /**
  * @brief 跳转到A程序
- * 
+ * uint8_t 0:成功  1:失败
  */
-void Int_Bootloader_jump_to_app(void)
+uint8_t Int_Bootloader_jump_to_app(void)
 {
 
     typedef void (*pFunc)(void);
@@ -229,13 +234,18 @@ void Int_Bootloader_jump_to_app(void)
     //栈顶地址的值
     uint32_t app_stack_ptr = *(volatile uint32_t*)(APP_START_ADDRESS);
     uint32_t app_reset_handle = *(volatile uint32_t*)(APP_START_ADDRESS + 4);
-
+    
+    // ================== 添加在这里 ==================
+    printf("app_stack_ptr: 0x%08X\r\n", app_stack_ptr);
+    printf("app_reset_handle: 0x%08X\r\n", app_reset_handle);
+    // ===============================================
+    
     //1.1校验栈顶地址
     if((app_stack_ptr & 0xFFFF0000)!=STACK_ADDR)
     {
         //栈顶地址不合法
         printf("stack addr error\r\n");
-        return;
+        return 1;
     }
 
     //1.2校验复位中断地址
@@ -243,24 +253,16 @@ void Int_Bootloader_jump_to_app(void)
     {
         //复位中断地址不合法
         printf("reset handle addr error\r\n");
-        return;
+        return 1;
     }
 
     //2.注销bootloader程序
-
-
-    NVIC_DisableIRQ(USART1_IRQn);
+    //2.1关闭中断
+    __disable_irq();
     
-    //关闭systick中断
-    SysTick ->CTRL = 0;
-    SysTick ->LOAD = 0;
-    SysTick ->VAL = 0;
-
-    //2.1注销HAL库设置  注销掉外设的配置  不会去注销内核
+    //注销HAL库设置  注销掉外设的配置  不会去注销内核
     HAL_DeInit();
 
-     //2.1关闭中断
-    __disable_irq();
 
     //2.2设置堆栈指针
     __set_MSP(app_stack_ptr);
@@ -270,5 +272,32 @@ void Int_Bootloader_jump_to_app(void)
 
     //2.4跳转到A程序的复位中断地址
     pFunc jump_tp_app = (pFunc)app_reset_handle;
+    //跳转代码之后的内容是执行不到的
     jump_tp_app();
+    
+    return 0;
+}
+
+/**
+ * @brief 外部可调用 提前擦除flash空间
+ * 
+ * 
+ */
+void Int_bootloader_erase_flash(uint32_t page_addr,uint16_t pages)
+{       //1.解锁flash
+        HAL_FLASH_Unlock();
+        //擦除当前页
+        FLASH_EraseInitTypeDef erase_init;
+        //擦除单独页
+        erase_init.TypeErase = FLASH_TYPEERASE_PAGES;
+        //擦除第1个bank的页
+        erase_init.Banks = FLASH_BANK_1;
+        //擦除当前页的起始地址
+        erase_init.PageAddress = page_addr;
+        //擦除1页
+        erase_init.NbPages = pages;
+        //擦除页的错误地址
+        uint32_t page_error = 0;
+        //flash擦除函数比较慢，擦除一页大约需要几十毫秒
+        HAL_FLASHEx_Erase(&erase_init, &page_error);
 }

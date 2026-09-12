@@ -9,6 +9,7 @@
                 "d:\\cube_project\\Bootloader_P02\\Drivers\\CMSIS\\Device\\ST\\STM32F1xx\\Include",
                 "d:\\cube_project\\Bootloader_P02\\Drivers\\CMSIS\\Include",
                 "d:\\cube_project\\Bootloader_P02\\Drivers\\BSP",
+                "d:\\cube_project\\Bootloader_P02\\Drivers\\Application",
                 "D:\\Keil5\\ARM\\ARMCC\\include",
                 "D:\\Keil5\\ARM\\ARMCC\\include\\rw",
                 "d:\\cube_project\\Bootloader_P02\\MDK-ARM",
