@@ -544,8 +544,8 @@ ARM Macro Assembler    Page 9
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=bootloader_p02\startup_stm32f103xe.d -obootloader_p02\startup_stm3
-2f103xe.o -I.\RTE\_Bootloader_P02 -IH:\Keil5\ARM\CMSIS\5.9.0\CMSIS\Core\Include
- -IH:\Keil5\Keil\STM32F1xx_DFP\2.3.0\Device\Include --predefine="__MICROLIB SET
+2f103xe.o -I.\RTE\_Bootloader_P02 -ID:\Keil5\ARM\CMSIS\5.9.0\CMSIS\Core\Include
+ -ID:\Keil5\Keil\STM32F1xx_DFP\2.3.0\Device\Include --predefine="__MICROLIB SET
 A 1" --predefine="__UVISION_VERSION SETA 539" --predefine="_RTE_ SETA 1" --pred
 efine="STM32F10X_HD SETA 1" --predefine="_RTE_ SETA 1" --list=startup_stm32f103
 xe.lst startup_stm32f103xe.s

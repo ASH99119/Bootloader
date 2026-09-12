@@ -25,8 +25,9 @@
 /* USER CODE BEGIN Includes */
 #include "string.h"
 //#include "int_bootloader.h"
-#include "App_bootloader.h"
-
+//#include "App_bootloader.h"
+#include "Int_w24c02.h"
+#include "my_iic.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,8 +98,24 @@ int main(void)
   //Int_Bootloader_Init();
 
 
-  //初始化bootloader => 打印日志启动
-  APP_bootloader_init();
+  //锟斤拷始锟斤拷bootloader => 锟斤拷印锟斤拷志锟斤拷锟斤拷
+  //APP_bootloader_init();
+
+  //测试EEPROM读写
+  //1.写入数据之后 需要等待5ms以上 才能读取 否则读不到数据,在内部已经写了HAL_Delay(5)所以这里我不写了
+  // Int_w24c02_write_byte(0x00, 'c');
+  // //HAL_Delay(5);
+  // uint8_t byte = Int_w24c02_read_byte(0x00);
+  // printf("Read byte: %c\r\n", byte);
+
+  //2.写入的数据超过一页 会从这一页的开头再次写入，由于我在Int_w24c02_write_bytes函数中已经写了一段计算地址偏移的自动切分逻辑所以不会出现78910456这样的回卷了
+
+  Int_w24c02_write_bytes(0x00, "123456789012345678910", 21);
+  HAL_Delay(5); 
+  uint8_t buff[21] = {0};
+  Int_w24c02_read_bytes(0x00, buff, 21);
+
+  printf("Read bytes: %s\r\n", buff);
 
   /* USER CODE END 2 */
 
@@ -108,14 +125,14 @@ int main(void)
   
   while (1)
   {
- //空闲中断接收 => 空闲帧中断 => idle空闲帧模式 =>收到数据后写一个地址值存储收到的数据长度
-  //1：接收缓存  2：接收数据长度 3：接收的数据缓存  4:实际接收数据长度  5接收时间
-  //接收的数据太小容易出现空闲中断丢失  => 需要验证实际接收数据有没有产生
-  //业务处理方向 接收数据最大256字节
+ //锟斤拷锟斤拷锟叫断斤拷锟斤拷 => 锟斤拷锟斤拷帧锟叫讹拷 => idle锟斤拷锟斤拷帧模式 =>锟秸碉拷锟斤拷锟捷猴拷写一锟斤拷锟斤拷址值锟芥储锟秸碉拷锟斤拷锟斤拷锟捷筹拷锟斤拷
+  //1锟斤拷锟斤拷锟秸伙拷锟斤拷  2锟斤拷锟斤拷锟斤拷锟斤拷锟捷筹拷锟斤拷 3锟斤拷锟斤拷锟秸碉拷锟斤拷锟捷伙拷锟斤拷  4:实锟绞斤拷锟斤拷锟斤拷锟捷筹拷锟斤拷  5锟斤拷锟斤拷时锟斤拷
+  //锟斤拷锟秸碉拷锟斤拷锟斤拷太小锟斤拷锟阶筹拷锟街匡拷锟斤拷锟叫断讹拷失  => 锟斤拷要锟斤拷证实锟绞斤拷锟斤拷锟斤拷锟斤拷锟斤拷没锟叫诧拷锟斤拷
+  //业锟斤拷锟斤拷锟斤拷 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟?256锟街斤拷
     // HAL_UARTEx_ReceiveToIdle(&huart1, receive_buff, REC_BUFF_LEN ,&receive_len, 0xffff);
     // if(receive_len > 0)
     // {
-    //1：接收缓存  2：接收数据长度 3：接收的数据缓存 4：接收时间
+    //1锟斤拷锟斤拷锟秸伙拷锟斤拷  2锟斤拷锟斤拷锟斤拷锟斤拷锟捷筹拷锟斤拷 3锟斤拷锟斤拷锟秸碉拷锟斤拷锟捷伙拷锟斤拷 4锟斤拷锟斤拷锟斤拷时锟斤拷
 
     //   HAL_UART_Transmit(&huart1, receive_buff, receive_len, 0xffff);
     //   memset(receive_buff, 0, 16);
@@ -124,13 +141,13 @@ int main(void)
 
 
 
-   //1：接收缓存  2：接收数据长度 3：接收的数据缓存 4：接收时间
-    //接收的数据要有效 =>1. 接收数据长度不为0   2.接收的数据缓存不为空
+   //1锟斤拷锟斤拷锟秸伙拷锟斤拷  2锟斤拷锟斤拷锟斤拷锟斤拷锟捷筹拷锟斤拷 3锟斤拷锟斤拷锟秸碉拷锟斤拷锟捷伙拷锟斤拷 4锟斤拷锟斤拷锟斤拷时锟斤拷
+    //锟斤拷锟秸碉拷锟斤拷锟斤拷要锟斤拷效 =>1. 锟斤拷锟斤拷锟斤拷锟捷筹拷锟饺诧拷为0   2.锟斤拷锟秸碉拷锟斤拷锟捷伙拷锟芥不为锟斤拷
 
     // HAL_UART_Receive(&huart1, receive_buff, 16, 0xffff);
     // if(strlen((char*)receive_buff) > 0)
     // {
-    //1：接收缓存  2：接收数据长度 3：接收的数据缓存  4：接收时间
+    //1锟斤拷锟斤拷锟秸伙拷锟斤拷  2锟斤拷锟斤拷锟斤拷锟斤拷锟捷筹拷锟斤拷 3锟斤拷锟斤拷锟秸碉拷锟斤拷锟捷伙拷锟斤拷  4锟斤拷锟斤拷锟斤拷时锟斤拷
     //   HAL_UART_Transmit(&huart1, receive_buff, 16, 0xffff);
     //   memset(receive_buff, 0, 16);
     // }
