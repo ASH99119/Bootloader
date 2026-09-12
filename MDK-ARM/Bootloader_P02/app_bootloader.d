@@ -1,6 +1,6 @@
 bootloader_p02\app_bootloader.o: ..\Drivers\Application\App_bootloader.c
 bootloader_p02\app_bootloader.o: ..\Drivers\Application\App_bootloader.h
-bootloader_p02\app_bootloader.o: ../Drivers/BSP/Int_bootloader.h
+bootloader_p02\app_bootloader.o: ../Drivers/BSP/Int_w24c02.h
 bootloader_p02\app_bootloader.o: ../Core/Inc/main.h
 bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
 bootloader_p02\app_bootloader.o: ../Core/Inc/stm32f1xx_hal_conf.h
@@ -28,6 +28,7 @@ bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_h
 bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
+bootloader_p02\app_bootloader.o: ../Drivers/BSP/int_bootloader.h
 bootloader_p02\app_bootloader.o: ../Core/Inc/usart.h
 bootloader_p02\app_bootloader.o: D:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
 bootloader_p02\app_bootloader.o: D:\Keil5\ARM\ARMCC\Bin\..\include\string.h

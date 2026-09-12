@@ -1,192 +1,64 @@
 #include "App_bootloader.h"
-#include <stdio.h>
 
-uint8_t app_rec_start_buff[64] = {0};
-uint16_t app_rec_start_len = 0; //接收数据的长度
-
-//记录接收程序的总长度
-uint32_t app_rec_total_len = 0;
-
-//发送完成标签
-uint8_t flag = 0;
-
-//记录当前应用层的状态
-Bootloader_status boot_status = BOOTLOADER_STATUS_INIT;
-
-//记录上次接收的时间
-extern uint32_t last_rec_time;
-
-//记录接收实际数据的长度
-extern uint16_t uart_rec_full_len;
-//按键的中断回调函数 =>确认发送程序完成
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    if(GPIO_Pin == KEY0_Pin)
-    {
-        //按键中断触发 => 发送完成标志
-        flag = 1;
-    }
-}
-
+uint8_t app_boot_update_status = BOOT_NO_UPDATE; //默认不需要更新
 
 
 /**
- * @brief  初始化bootloader => 打印日志启动
- * 
+ * @brief  //判断当前是否需要进行更新
+ * @retval None
  */
-void APP_bootloader_init(void)
+void App_Bootloader_Check_Update(void)
 {
-    printf("bootloader start\r\n");
-    printf("wait for user send data\r\n");
-    printf("send 'start:len' to start\r\n");
-    boot_status = BOOTLOADER_STATUS_INIT;
-   
-}
-
-
-
-
-/**
- * @brief  等待用户传输确认
- * 如果发送的指令不对  不需要重启程序  重新发送start：len启动命令即可
- * 
- */
-void APP_bootloader_run(void)
-{
-    //使用非中断方式接受 => 区分接受程序
-    //挂起等待接收 =>一直等待接受到buff满 或者 收到idle空闲帧
-    HAL_UARTEx_ReceiveToIdle(&huart1, app_rec_start_buff, 64,&app_rec_start_len,0xFFFFFFFF);
-    if(app_rec_start_len > 0)
+    //读取3个字节的数据
+    uint8_t data[3];
+    Int_w24c02_read_bytes(CHECK_UPDATE_ADDR, data, 3);
+    //1.检查密钥是否正确   高8位在前
+    uint16_t key = (data[1] << 8) | data[2];
+    if (key != CHECK_KEY)
     {
-        //判断数据是否包含start:len
-        char *start_str = strstr((char*)app_rec_start_buff, "start:");
-        if(start_str != NULL)
-        {
-            //保存len的值
-            app_rec_total_len = atoi((char*)start_str + 6);
-            if(app_rec_total_len > 0)
-            {
-                printf("app len: %d\r\n", app_rec_total_len);
-                //修改状态到下个阶段
-                boot_status = BOOTLOADER_STATUS_RUN;
-            }
-            else
-            {
-                printf("len error\r\n");
-            }
-        }
-        else
-        {
-            printf("data error\r\n");
-        }
-    }
-}
-
-
-/**
- * @brief  接收数据
- * 
- */
-void APP_bootloader_rec_data(void)
-{
-    //接受完成折后 修改状态为检查数据App_bootloader_check_data()
-   
-    //(1)软件方式 从接收到一次程序数据开始算 从idle空闲帧开始算等待2s
-    // if(last_rec_time != 0 && HAL_GetTick() - last_rec_time > 2000)
-    // {
-    //     boot_status = BOOTLOADER_STATUS_CHECK_DATA;
-    // }
-
-    //(2)硬件方式 通过按键中断触发 => 发送完成标志
-    if(flag == 1)
-    {
-        //发送完成
-        boot_status = BOOTLOADER_STATUS_CHECK_DATA;
-    }
-   
-}
-
-
-
-/**
- * @brief  已经传输完成 检查数据
- * uint8_t 0:通过  1:错误
- */
-uint8_t App_bootloader_check_data(void)
-{
-    if(uart_rec_full_len == app_rec_total_len)
-    {
-        //长度一致 没问题
-        printf("app rec done\r\n");
-        boot_status = BOOTLOADER_STATUS_JUMP_APP;
-        return 0;
+        //密钥不正确，不进行更新   重置密钥
+        data[0] = BOOT_NO_UPDATE;
+        data[1] = (uint8_t)(CHECK_KEY >> 8);
+        data[2] = (uint8_t)(CHECK_KEY );
+        Int_w24c02_write_bytes(CHECK_UPDATE_ADDR, data, 3);
     }
     else
     {
-        printf("app rec error or timeout\r\n");
+        //密钥正确 读取状态值 判断当前是否需要更新
+        app_boot_update_status = data[0];
+
     }
-    return 1;
 }
 
 
 
-/**
- * @brief  跳转到应用程序
- * uint8_t 0:成功  1:失败
- */
-uint8_t App_bootloader_jump_app(void)
-{
-    printf("jump to app\r\n");
-    uint8_t ret = Int_Bootloader_jump_to_app();
-    return ret;
-}
-
 
 
 /**
- * @brief  在main方法的while循环中调用 => 处理bootloader的工作
+ * @brief  //执行更新操作
+ * @retval None
  */
-void App_bootloader_work(void)
+void App_bootloader_Update(void)
 {
-    switch(boot_status)
+    if(app_boot_update_status == BOOT_UPDATE)
     {
-        case BOOTLOADER_STATUS_INIT:
-            //等待用户传输确认
-            APP_bootloader_run();
-            break;
-
-        case BOOTLOADER_STATUS_RUN:
-            //接收数据的准备工作
-            //确认写入flash =>提前擦除flash空间   擦除10页20k
-            Int_bootloader_erase_flash(APP_START_ADDRESS, 10);
-            printf("flash erase done\r\n");
-            printf("ready to receive app\r\n");
-            boot_status = BOOTLOADER_STATUS_REC_DATA;
-            flag = 0;
-            Int_Bootloader_receive_app();
-            break;
-            
-        case BOOTLOADER_STATUS_REC_DATA:
-            //等待接收完成
-            APP_bootloader_rec_data();
-            break;
-
-
-        case BOOTLOADER_STATUS_CHECK_DATA:
-            //接收完成 => 检查数据
-            if(App_bootloader_check_data() == 1)
-            {
-                printf("app rec error,system reset\r\n");
-                NVIC_SystemReset();
-            }
-            break;
-
-        case BOOTLOADER_STATUS_JUMP_APP:
-            if(App_bootloader_jump_app() == 1)
-            {
-                printf("jump to app error\r\n");
-                NVIC_SystemReset();
-            }
-            break;
+        //将W25Q64中的程序写入到flash中
+        printf("Starting application update...\n");
     }
+    else
+    {
+        //不需要更新
+        printf("No need to update the application.\n");
+    }
+}
+
+
+/**
+ * @brief  //执行跳转操作
+ * @retval None
+ */
+void App_bootloader_Jump_App(void)
+{
+    //不管更新与否 最后都需要执行跳转的操作 到A程序中
+    Int_Bootloader_jump_to_app();
 }

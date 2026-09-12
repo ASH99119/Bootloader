@@ -134,62 +134,66 @@ void Int_w24c02_write_bytes(uint8_t byte_addr, uint8_t *data, uint16_t len)
     // 使用软件IIC写入多个字节
     /* 软件 IIC 替代 HAL_I2C_Mem_Write 的完整过程 */
     //无保护，超过页大小自动从页首开始写入，导致数据回卷
-    uint16_t i;
+    // uint16_t i;
     
-    IIC_Start();  
-    IIC_Send_Byte(W24C02_ADDR);   // 发送写设备地址 (0xA0)
-    IIC_Wait_Ack();
+    // IIC_Start();  
+    // IIC_Send_Byte(W24C02_ADDR);   // 发送写设备地址 (0xA0)
+    // IIC_Wait_Ack();
 
-    IIC_Send_Byte(byte_addr);     // 发送起始内部地址
-    IIC_Wait_Ack();                                                                                                      
+    // IIC_Send_Byte(byte_addr);     // 发送起始内部地址
+    // IIC_Wait_Ack();                                                                                                      
 
-    // 【致命缺陷区域】：没有任何分页保护，直接将所有字节连续发往芯片
-    for(i = 0; i < len; i++)
+    // // 【致命缺陷区域】：没有任何分页保护，直接将所有字节连续发往芯片
+    // for(i = 0; i < len; i++)
+    // {
+    //     IIC_Send_Byte(data[i]);
+    //     IIC_Wait_Ack();
+    // }
+
+    // IIC_Stop();                   // 循环结束后才发停止信号，触发一次性刻录
+    // HAL_Delay(5);                 // 等待烧写
+
+
+
+
+    // 使用软件IIC实现：带页对齐处理的连续写入算法，防止回卷。一页写满后向下写入
+    //方法：(1)循环单字节写入 => 实现代码简单 效率低
+    //(2)软件判断写入具体哪几页 1页写入一次
+    // 关键点：W24C02 每页大小为 8 字节，写入时需要考虑页边界，避免数据回卷
+    //(2)方法：计算当前页剩余空间，决定本次写入长度，写完后更新地址和剩余长度，循环直到写完所有数据
+    uint16_t i = 0;
+
+    while (len > 0)
     {
-        IIC_Send_Byte(data[i]);
-        IIC_Wait_Ack();
-    }
-
-    IIC_Stop();                   // 循环结束后才发停止信号，触发一次性刻录
-    HAL_Delay(5);                 // 等待烧写
-
-
-
-
-    // 使用软件IIC实现：带页对齐处理的连续写入算法，防止回卷
-//     uint16_t i = 0;
-
-//     while (len > 0)
-//     {
-//         // 1. 计算当前页还能写多少个字节
-//         // 取余数可以知道当前地址在页内的偏移，用页大小减去偏移就是本页剩余空间
-//         uint8_t page_remain = W24C02_PAGE_SIZE - (byte_addr % W24C02_PAGE_SIZE);
+        // 1. 计算当前页还能写多少个字节
+        // 取余数可以知道当前地址在页内的偏移，用页大小减去偏移就是本页剩余空间
+        uint8_t page_remain = W24C02_PAGE_SIZE - (byte_addr % W24C02_PAGE_SIZE);
         
-//         // 2. 决定本次写入的长度
-//         // 如果剩余要写的数据长度 < 本页剩余空间，就只写所需长度；否则填满当前页
-//         uint8_t write_len = (len < page_remain) ? len : page_remain;
+        // 2. 决定本次写入的长度
+        // 如果剩余要写的数据长度 < 本页剩余空间，就只写所需长度；否则填满当前页
+        uint8_t write_len = (len < page_remain) ? len : page_remain;
 
-//         // 3. 执行 I2C 物理写入时序 (页写模式)
-//         IIC_Start();  
-//         IIC_Send_Byte(W24C02_ADDR);   // 发送写设备地址 (0xA0)
-//         IIC_Wait_Ack();
+        // 3. 执行 I2C 物理写入时序 (页写模式)
+        IIC_Start();  
+        IIC_Send_Byte(W24C02_ADDR);   // 发送写设备地址 (0xA0)
+        IIC_Wait_Ack();
 
-//         IIC_Send_Byte(byte_addr);     // 发送目标字节地址
-//         IIC_Wait_Ack();                                                                                                      
+        IIC_Send_Byte(byte_addr);     // 发送目标字节地址
+        IIC_Wait_Ack();                                                                                                      
 
-//         // 连续发送 write_len 个数据，不产生停止信号
-//         for (uint8_t j = 0; j < write_len; j++)
-//         {
-//             IIC_Send_Byte(data[i++]);
-//             IIC_Wait_Ack();
-//         }
+        // 连续发送 write_len 个数据，不产生停止信号
+        for (uint8_t j = 0; j < write_len; j++)
+        {
+            IIC_Send_Byte(data[i++]);
+            IIC_Wait_Ack();
+        }
 
-//         IIC_Stop();                   // 产生停止信号，触发 EEPROM 开始内部页烧写
+        IIC_Stop();                   // 产生停止信号，触发 EEPROM 开始内部页烧写
 
-//         HAL_Delay(5);                 // 等待 EEPROM 内部烧写完成 (按页等待，大大提升速度)
+        HAL_Delay(5);                 // 等待 EEPROM 内部烧写完成 (按页等待，大大提升速度)
 
-//         // 4. 更新地址和剩余长度，准备写下一页 (如果有)
-//         byte_addr += write_len;
-//         len -= write_len;
-//     }
+        // 4. 更新地址和剩余长度，准备写下一页 (如果有)
+        byte_addr += write_len;
+        len -= write_len;
+    }
 }

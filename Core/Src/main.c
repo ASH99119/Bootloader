@@ -28,6 +28,7 @@
 //#include "App_bootloader.h"
 #include "Int_w24c02.h"
 #include "my_iic.h"
+#include "APP_bootloader.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,7 +55,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-extern uint16_t uart_rec_full_len; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½Ü³ï¿½ï¿½ï¿½
+extern uint16_t uart_rec_full_len; //½ÓÊÕÊý¾ÝµÄ×Ü³¤¶È
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -98,7 +99,7 @@ int main(void)
   //Int_Bootloader_Init();
 
 
-  //ï¿½ï¿½Ê¼ï¿½ï¿½bootloader => ï¿½ï¿½Ó¡ï¿½ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½
+  //³õÊ¼»¯bootloader => ´òÓ¡ÈÕÖ¾Æô¶¯
   //APP_bootloader_init();
 
   //²âÊÔEEPROM¶ÁÐ´
@@ -109,56 +110,29 @@ int main(void)
   // printf("Read byte: %c\r\n", byte);
 
   //2.Ð´ÈëµÄÊý¾Ý³¬¹ýÒ»Ò³ »á´ÓÕâÒ»Ò³µÄ¿ªÍ·ÔÙ´ÎÐ´Èë£¬ÓÉÓÚÎÒÔÚInt_w24c02_write_bytesº¯ÊýÖÐÒÑ¾­Ð´ÁËÒ»¶Î¼ÆËãµØÖ·Æ«ÒÆµÄ×Ô¶¯ÇÐ·ÖÂß¼­ËùÒÔ²»»á³öÏÖ78910456ÕâÑùµÄ»Ø¾íÁË
+  // Int_w24c02_write_bytes(0x00, "123456789012345678910", 21);
+  // HAL_Delay(5); 
+  // uint8_t buff[21] = {0};
+  // Int_w24c02_read_bytes(0x00, buff, 21);
 
-  Int_w24c02_write_bytes(0x00, "123456789012345678910", 21);
-  HAL_Delay(5); 
-  uint8_t buff[21] = {0};
-  Int_w24c02_read_bytes(0x00, buff, 21);
+  // printf("Read bytes: %s\r\n", buff);
 
-  printf("Read bytes: %s\r\n", buff);
+  //1.¼ì²é¸üÐÂ×´Ì¬
+  App_Bootloader_Check_Update();
+
+  //2.¸ù¾Ý×´Ì¬½øÐÐ¸üÐÂ
+  App_bootloader_Update();
+
+  //3.Ìø×ªµ½Ó¦ÓÃ³ÌÐò
+  App_bootloader_Jump_App();
+
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  
-  
   while (1)
   {
- //ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï½ï¿½ï¿½ï¿½ => ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½Ð¶ï¿½ => idleï¿½ï¿½ï¿½ï¿½Ö¡Ä£Ê½ =>ï¿½Õµï¿½ï¿½ï¿½ï¿½Ýºï¿½Ð´Ò»ï¿½ï¿½ï¿½ï¿½Ö·Öµï¿½æ´¢ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½
-  //1ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½  2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½ 3ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½  4:Êµï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½  5ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
-  //ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½Ì«Ð¡ï¿½ï¿½ï¿½×³ï¿½ï¿½Ö¿ï¿½ï¿½ï¿½ï¿½Ð¶Ï¶ï¿½Ê§  => ï¿½ï¿½Òªï¿½ï¿½Ö¤Êµï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð²ï¿½ï¿½ï¿½
-  //Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?256ï¿½Ö½ï¿½
-    // HAL_UARTEx_ReceiveToIdle(&huart1, receive_buff, REC_BUFF_LEN ,&receive_len, 0xffff);
-    // if(receive_len > 0)
-    // {
-    //1ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½  2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½ 3ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½ 4ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
-
-    //   HAL_UART_Transmit(&huart1, receive_buff, receive_len, 0xffff);
-    //   memset(receive_buff, 0, 16);
-    //   receive_len = 0;
-    // }
-
-
-
-   //1ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½  2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½ 3ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½ 4ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
-    //ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ð§ =>1. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½È²ï¿½Îª0   2.ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½æ²»Îªï¿½ï¿½
-
-    // HAL_UART_Receive(&huart1, receive_buff, 16, 0xffff);
-    // if(strlen((char*)receive_buff) > 0)
-    // {
-    //1ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½  2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½ 3ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½  4ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
-    //   HAL_UART_Transmit(&huart1, receive_buff, 16, 0xffff);
-    //   memset(receive_buff, 0, 16);
-    // }
-
-
-    // printf("uart_rec_full_len:%d\r\n", uart_rec_full_len);
-    // HAL_Delay(3000);
-    // Int_Bootloader_jump_to_app();
-
-
-    App_bootloader_work();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

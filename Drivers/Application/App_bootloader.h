@@ -1,58 +1,43 @@
 #ifndef __APP_BOOTLOADER_H
 #define __APP_BOOTLOADER_H
-#include "Int_bootloader.h"
-#include "usart.h"
+
+#include "Int_w24c02.h"
+#include "int_bootloader.h"
 
 
-typedef enum
-{
-    BOOTLOADER_STATUS_INIT,
-    BOOTLOADER_STATUS_RUN,
-    BOOTLOADER_STATUS_REC_DATA,
-    BOOTLOADER_STATUS_CHECK_DATA,
-    BOOTLOADER_STATUS_JUMP_APP
-}Bootloader_status;
+//Ìí¼ÓĞ£ÑéµÄÃÜÔ¿
+#define CHECK_KEY_ADDR 0x09
+#define CHECK_KEY 0x5A6B
+// ´æ´¢¸üĞÂ×´Ì¬µÄÎ»ÖÃ
+#define CHECK_UPDATE_ADDR 0x08 
+//¸üĞÂ×´Ì¬µÄÖµ
+#define BOOT_UPDATE 0x01
+#define BOOT_NO_UPDATE 0x02
 
 
-
-/**
- * @brief  åˆå§‹åŒ–bootloader => æ‰“å°æ—¥å¿—å¯åŠ¨
- * 
- */
-void APP_bootloader_init(void);
-
-/**
- * @brief  ç­‰å¾…ç”¨æˆ·ä¼ è¾“ç¡®è®¤
- * 
- */
-void APP_bootloader_run(void);
 
 
 
 /**
- * @brief  æ¥æ”¶æ•°æ®
- * 
+ * @brief  //ÅĞ¶Ïµ±Ç°ÊÇ·ñĞèÒª½øĞĞ¸üĞÂ
+ * @retval None
  */
-void APP_bootloader_rec_data(void);
+void App_Bootloader_Check_Update(void);
 
 /**
- * @brief  å·²ç»ä¼ è¾“å®Œæˆ æ£€æŸ¥æ•°æ®
- * uint8_t 0:é€šè¿‡  1:æ•°æ®é”™è¯¯
+ * @brief  //Ö´ĞĞ¸üĞÂ²Ù×÷
+ * @retval None
  */
-uint8_t App_bootloader_check_data(void);
-
-
-/**
- * @brief  è·³è½¬åˆ°åº”ç”¨ç¨‹åº
- * uint8_t 0:æˆåŠŸ  1:å¤±è´¥
- */
-uint8_t App_bootloader_jump_app(void);
+void App_bootloader_Update(void);
 
 
 /**
- * @brief  åœ¨mainæ–¹æ³•çš„whileå¾ªç¯ä¸­è°ƒç”¨ => å¤„ç†bootloaderçš„å·¥ä½œ
+ * @brief  //Ö´ĞĞÌø×ª²Ù×÷
+ * @retval None
  */
-void App_bootloader_work(void);
+void App_bootloader_Jump_App(void);
 
 
-#endif  // ï¼__APP_BOOTLOADER_H
+
+
+#endif /* __APP_BOOTLOADER_H */

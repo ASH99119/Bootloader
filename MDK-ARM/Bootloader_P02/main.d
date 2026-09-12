@@ -32,3 +32,5 @@ bootloader_p02\main.o: ../Core/Inc/gpio.h
 bootloader_p02\main.o: D:\Keil5\ARM\ARMCC\Bin\..\include\string.h
 bootloader_p02\main.o: ../Drivers/BSP/Int_w24c02.h
 bootloader_p02\main.o: ../Drivers/BSP/my_iic.h
+bootloader_p02\main.o: ../Drivers/Application/APP_bootloader.h
+bootloader_p02\main.o: ../Drivers/BSP/int_bootloader.h
