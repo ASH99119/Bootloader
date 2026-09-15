@@ -45,6 +45,16 @@ void App_bootloader_Update(void)
         //将W25Q64中的程序写入到flash中
         printf("Starting application update...\n");
     }
+    else if(app_boot_update_status == BOOT_NO_UPDATE)
+    {
+        //恢复出厂设置
+        printf("Restoring factory settings...\n");
+    }
+    else if(app_boot_update_status == BOOT_RESET)
+    {
+        //恢复出厂设置
+        printf("Restoring factory settings...\n");
+    }
     else
     {
         //不需要更新

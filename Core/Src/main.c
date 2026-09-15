@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -26,6 +27,7 @@
 #include "string.h"
 //#include "int_bootloader.h"
 //#include "App_bootloader.h"
+#include "Int_w25q64.h"
 #include "Int_w24c02.h"
 #include "my_iic.h"
 #include "APP_bootloader.h"
@@ -93,6 +95,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   // uint8_t receive_buff[16] = {0};
   // uint16 receive_len = 0;
@@ -116,6 +119,30 @@ int main(void)
   // Int_w24c02_read_bytes(0x00, buff, 21);
 
   // printf("Read bytes: %s\r\n", buff);
+
+
+  //3.测试W25Q64读取ID
+  uint8_t mf_id = 0;
+  uint16_t device_id = 0;
+  Int_w25q64_read_id(&mf_id, &device_id);
+
+  printf("mf_id: %d\r\n", mf_id);
+  printf("device_id: %d\r\n", device_id);
+
+
+  // //擦除一扇地址 第0块的第0扇  0x000000 - 0x000FFF 4k
+  // Int_w25q64_erase_sector(0, 0);
+
+  // //写入数据测试 只能在一页中写入 写入到末尾后 会从这一页的开始位置写入
+  // Int_w25q64_write_data(0, 0, 0, 0xFE, "12345678", 8);
+
+  //读取数据测试
+  uint8_t data[17] = {0};
+  Int_w25q64_read_data(0, 0, 0, 0x00, data, 16);
+  for(int i = 0; i < 17; i++)
+  {
+    printf("data[%d]: %c\r\n", i, data[i]);
+  }
 
   //1.检查更新状态
   App_Bootloader_Check_Update();

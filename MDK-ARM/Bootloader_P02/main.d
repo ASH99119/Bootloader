@@ -25,11 +25,14 @@ bootloader_p02\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.
 bootloader_p02\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 bootloader_p02\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 bootloader_p02\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
+bootloader_p02\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 bootloader_p02\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
+bootloader_p02\main.o: ../Core/Inc/spi.h
 bootloader_p02\main.o: ../Core/Inc/usart.h
 bootloader_p02\main.o: D:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
 bootloader_p02\main.o: ../Core/Inc/gpio.h
 bootloader_p02\main.o: D:\Keil5\ARM\ARMCC\Bin\..\include\string.h
+bootloader_p02\main.o: ../Drivers/BSP/Int_w25q64.h
 bootloader_p02\main.o: ../Drivers/BSP/Int_w24c02.h
 bootloader_p02\main.o: ../Drivers/BSP/my_iic.h
 bootloader_p02\main.o: ../Drivers/Application/APP_bootloader.h

@@ -26,5 +26,6 @@ bootloader_p02\int_w24c02.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_c
 bootloader_p02\int_w24c02.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 bootloader_p02\int_w24c02.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 bootloader_p02\int_w24c02.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
+bootloader_p02\int_w24c02.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 bootloader_p02\int_w24c02.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 bootloader_p02\int_w24c02.o: ..\Drivers\BSP\my_iic.h

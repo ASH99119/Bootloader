@@ -13,6 +13,9 @@
 //更新状态的值
 #define BOOT_UPDATE 0x01
 #define BOOT_NO_UPDATE 0x02
+//恢复出厂设置
+#define BOOT_RESET 0x03
+
 
 
 

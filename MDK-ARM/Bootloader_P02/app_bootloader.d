@@ -27,6 +27,7 @@ bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_h
 bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
+bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 bootloader_p02\app_bootloader.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 bootloader_p02\app_bootloader.o: ../Drivers/BSP/int_bootloader.h
 bootloader_p02\app_bootloader.o: ../Core/Inc/usart.h
