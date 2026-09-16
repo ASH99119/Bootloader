@@ -1,0 +1,28 @@
+--cpu Cortex-M3
+"bootloader_p02\startup_stm32f103xe.o"
+"bootloader_p02\main.o"
+"bootloader_p02\gpio.o"
+"bootloader_p02\spi.o"
+"bootloader_p02\usart.o"
+"bootloader_p02\stm32f1xx_it.o"
+"bootloader_p02\stm32f1xx_hal_msp.o"
+"bootloader_p02\stm32f1xx_hal_gpio_ex.o"
+"bootloader_p02\stm32f1xx_hal_spi.o"
+"bootloader_p02\stm32f1xx_hal.o"
+"bootloader_p02\stm32f1xx_hal_rcc.o"
+"bootloader_p02\stm32f1xx_hal_rcc_ex.o"
+"bootloader_p02\stm32f1xx_hal_gpio.o"
+"bootloader_p02\stm32f1xx_hal_dma.o"
+"bootloader_p02\stm32f1xx_hal_cortex.o"
+"bootloader_p02\stm32f1xx_hal_pwr.o"
+"bootloader_p02\stm32f1xx_hal_flash.o"
+"bootloader_p02\stm32f1xx_hal_flash_ex.o"
+"bootloader_p02\stm32f1xx_hal_exti.o"
+"bootloader_p02\stm32f1xx_hal_uart.o"
+"bootloader_p02\system_stm32f1xx.o"
+"bootloader_p02\int_bootloader.o"
+"bootloader_p02\app_reset.o"
+--library_type=microlib --strict --scatter "Bootloader_P02\Bootloader_P02.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "Bootloader_P02.map" -o Bootloader_P02\Bootloader_P02.axf
