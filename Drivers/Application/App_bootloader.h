@@ -40,6 +40,12 @@ void App_bootloader_Update(void);
  */
 void App_bootloader_Jump_App(void);
 
+/**
+ * @brief  //检查是否需要进入默认程序
+ * @retval None
+ */
+void App_bootloader_check_default(void);
+
 
 
 

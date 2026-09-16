@@ -9,6 +9,8 @@ uint8_t app_boot_update_status = BOOT_NO_UPDATE; //默认不需要更新
  */
 void App_Bootloader_Check_Update(void)
 {
+    printf("bootloader start\n");
+    printf("check update\n");
     //读取3个字节的数据
     uint8_t data[3];
     Int_w24c02_read_bytes(CHECK_UPDATE_ADDR, data, 3);
@@ -26,12 +28,26 @@ void App_Bootloader_Check_Update(void)
     {
         //密钥正确 读取状态值 判断当前是否需要更新
         app_boot_update_status = data[0];
-
     }
 }
 
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == KEY0_Pin)
+    {
+        app_boot_update_status = BOOT_RESET;
+    }
+}
 
+/**
+ * @brief  //检查是否需要进入出厂设置
+ * @retval None
+ */
+void App_bootloader_check_default(void)
+{
+    HAL_Delay(3000); 
+}
 
 
 /**
@@ -43,22 +59,18 @@ void App_bootloader_Update(void)
     if(app_boot_update_status == BOOT_UPDATE)
     {
         //将W25Q64中的程序写入到flash中
-        printf("Starting application update...\n");
+        //TODO：将w25q64中的程序写入到flash中
+        printf("Update\n");
     }
     else if(app_boot_update_status == BOOT_NO_UPDATE)
     {
-        //恢复出厂设置
-        printf("Restoring factory settings...\n");
+        //不需要更新
+        printf("No update\n");
     }
     else if(app_boot_update_status == BOOT_RESET)
     {
         //恢复出厂设置
-        printf("Restoring factory settings...\n");
-    }
-    else
-    {
-        //不需要更新
-        printf("No need to update the application.\n");
+        printf("Reset\n");
     }
 }
 
@@ -70,5 +82,14 @@ void App_bootloader_Update(void)
 void App_bootloader_Jump_App(void)
 {
     //不管更新与否 最后都需要执行跳转的操作 到A程序中
+    if(app_boot_update_status == BOOT_RESET)
+    {
+        //跳转到出厂的默认程序 0x80040000
+    }
+    else
+    {
+        //不需要恢复出厂设置 0x800 80000
+    }   
+
     Int_Bootloader_jump_to_app();
 }

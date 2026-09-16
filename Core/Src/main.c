@@ -97,60 +97,18 @@ int main(void)
   MX_USART1_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  // uint8_t receive_buff[16] = {0};
-  // uint16 receive_len = 0;
-  //Int_Bootloader_Init();
 
 
-  //初始化bootloader => 打印日志启动
-  //APP_bootloader_init();
-
-  //测试EEPROM读写
-  //1.写入数据之后 需要等待5ms以上 才能读取 否则读不到数据,在内部已经写了HAL_Delay(5)所以这里我不写了
-  // Int_w24c02_write_byte(0x00, 'c');
-  // //HAL_Delay(5);
-  // uint8_t byte = Int_w24c02_read_byte(0x00);
-  // printf("Read byte: %c\r\n", byte);
-
-  //2.写入的数据超过一页 会从这一页的开头再次写入，由于我在Int_w24c02_write_bytes函数中已经写了一段计算地址偏移的自动切分逻辑所以不会出现78910456这样的回卷了
-  // Int_w24c02_write_bytes(0x00, "123456789012345678910", 21);
-  // HAL_Delay(5); 
-  // uint8_t buff[21] = {0};
-  // Int_w24c02_read_bytes(0x00, buff, 21);
-
-  // printf("Read bytes: %s\r\n", buff);
-
-
-  //3.测试W25Q64读取ID
-  uint8_t mf_id = 0;
-  uint16_t device_id = 0;
-  Int_w25q64_read_id(&mf_id, &device_id);
-
-  printf("mf_id: %d\r\n", mf_id);
-  printf("device_id: %d\r\n", device_id);
-
-
-  // //擦除一扇地址 第0块的第0扇  0x000000 - 0x000FFF 4k
-  // Int_w25q64_erase_sector(0, 0);
-
-  // //写入数据测试 只能在一页中写入 写入到末尾后 会从这一页的开始位置写入
-  // Int_w25q64_write_data(0, 0, 0, 0xFE, "12345678", 8);
-
-  //读取数据测试
-  uint8_t data[17] = {0};
-  Int_w25q64_read_data(0, 0, 0, 0x00, data, 16);
-  for(int i = 0; i < 17; i++)
-  {
-    printf("data[%d]: %c\r\n", i, data[i]);
-  }
-
-  //1.检查更新状态
+   //1.初始化Bootloader
   App_Bootloader_Check_Update();
 
-  //2.根据状态进行更新
+  //2.是否进入默认程序，恢复出厂设置
+  App_bootloader_check_default();
+
+  //3.根据状态进行更新
   App_bootloader_Update();
 
-  //3.跳转到应用程序
+  //4.跳转到应用程序
   App_bootloader_Jump_App();
 
 

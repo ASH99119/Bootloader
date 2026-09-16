@@ -235,10 +235,10 @@ uint8_t Int_Bootloader_jump_to_app(void)
     uint32_t app_stack_ptr = *(volatile uint32_t*)(APP_START_ADDRESS);
     uint32_t app_reset_handle = *(volatile uint32_t*)(APP_START_ADDRESS + 4);
     
-    // ================== 添加在这里 ==================
-    printf("app_stack_ptr: 0x%08X\r\n", app_stack_ptr);
-    printf("app_reset_handle: 0x%08X\r\n", app_reset_handle);
-    // ===============================================
+    // // ================== 添加在这里 ==================
+     printf("app_stack_ptr: 0x%08X\r\n", app_stack_ptr);
+     printf("app_reset_handle: 0x%08X\r\n", app_reset_handle);
+     // ===============================================
     
     //1.1校验栈顶地址
     if((app_stack_ptr & 0xFFFF0000)!=STACK_ADDR)
